@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
 import type { User } from "@/app/lib/types";
+import Link from "next/link";
 
 export default function UsersPage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function UsersPage() {
 
     const mapped: User[] = result.map((u: any) => ({
       id: u.id,
+      email: u.email,
       name: u.name,
       roles: u.expand?.roles || [],
     }));
@@ -54,7 +56,14 @@ export default function UsersPage() {
                 <td className="py-2">
                   {user.roles.map((r) => r.role).join(" & ")}
                 </td>
-                <td className="py-2 text-right pr-4 text-gray-500">...</td>
+                <td className="py-2 text-right pr-4 text-gray-500">
+                  <Link
+                    href={`/pages/userProfile/${user.id}`}
+                    className="text-gray-500 hover:underline"
+                  >
+                    ...
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>
