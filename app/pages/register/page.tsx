@@ -53,6 +53,7 @@ export default function RegisterPage() {
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">Register User</h1>
+        <title>Register</title>
 
         <label className="block mb-2 text-sm font-medium">Name</label>
         <input
