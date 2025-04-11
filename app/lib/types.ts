@@ -11,3 +11,10 @@ export type RegisterForm = {
   password: string;
   roles: Role[];
 };
+
+
+export type User = {
+  id: string;
+  name: string;
+  roles: { role: string }[];
+};
