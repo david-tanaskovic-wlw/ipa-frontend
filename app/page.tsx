@@ -19,6 +19,7 @@ export default function UsersPage() {
       const result = await pb.collection("users").getFullList({
         expand: "roles",
         sort: "name",
+        requestKey: null
       });
 
       const mapped: User[] = result.map((u: any) => ({

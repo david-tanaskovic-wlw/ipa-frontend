@@ -13,7 +13,7 @@ export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   return (
-    <div className="absolute top-4 right-4">
+    <div className="absolute top-20 right-4">
       <select
         value={i18n.resolvedLanguage}
         onChange={(e) => i18n.changeLanguage(e.target.value)}

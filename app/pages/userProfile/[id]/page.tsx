@@ -25,6 +25,7 @@ export default function UserProfilePage() {
     const getUser = async () => {
       const record = await pb.collection("users").getOne(userId, {
         expand: "roles",
+        requestKey: null
       });
 
       const currentUserPermissions =
@@ -60,7 +61,7 @@ export default function UserProfilePage() {
 
   const handleUpdate = async () => {
     if (!isEditable) return;
-    const confirmed = confirm("Möchtest du die Änderungen wirklich speichern?");
+    const confirmed = confirm(t("profileView.confirmation.edit"));
     if (!confirmed) return;
 
     const roleRecords = await pb.collection("roles").getFullList({
@@ -80,7 +81,7 @@ export default function UserProfilePage() {
 
   const handleDelete = async () => {
     if (!isEditable) return;
-    const confirmed = confirm("Möchtest du diesen Benutzer wirklich löschen?");
+    const confirmed = confirm(t("profileView.confirmation.delete"));
     if (!confirmed) return;
 
     await pb.collection("users").delete(userId);

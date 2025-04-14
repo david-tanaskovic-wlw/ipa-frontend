@@ -37,6 +37,7 @@ export default function LoginPage() {
           .collection("users")
           .getOne(userRecord.record.id, {
             expand: "roles.permissions",
+            requestKey: null,
           });
 
         pb.authStore.save(userRecord.token, expanded);
@@ -45,6 +46,7 @@ export default function LoginPage() {
       }
 
       router.push("/");
+      window.location.reload();
     } catch (err) {
       console.error("Login fehlgeschlagen:", err);
       alert("Login fehlgeschlagen");
@@ -57,7 +59,9 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">{t("login.loginText")}</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          {t("login.loginText")}
+        </h1>
         <title>{t("login.loginText")}</title>
 
         <label className="block mb-2 text-sm font-medium">E-Mail</label>
@@ -71,7 +75,9 @@ export default function LoginPage() {
           required
         />
 
-        <label className="block mb-2 text-sm font-medium">{t("login.passwordText")}</label>
+        <label className="block mb-2 text-sm font-medium">
+          {t("login.passwordText")}
+        </label>
         <input
           name="password"
           type="password"
