@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import pb from "@/app/hooks/usePocketBase";
 import type { RegisterForm, Role } from "@/app/lib/types";
 
@@ -11,6 +11,17 @@ export default function RegisterPage() {
     password: "",
     roles: [],
   });
+
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const permissions =
+      pb.authStore.model?.expand?.roles?.flatMap((r: any) =>
+        r.expand?.permissions?.map((p: any) => p.permission)
+      ) || [];
+
+    setHasPermission(permissions.includes("user_create"));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -47,6 +58,18 @@ export default function RegisterPage() {
     });
   };
 
+  if (hasPermission === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 text-red-600 px-4">
+        <div className="text-center bg-white p-8 shadow-md rounded-md max-w-md w-full">
+          <h1 className="text-2xl font-bold mb-4">Keine Berechtigung</h1>
+          <p className="text-gray-700">
+            Du hast keine Berechtigung, um neue Benutzer zu erstellen.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="bg-gray-50 text-gray-900 min-h-screen flex items-center justify-center px-4">
       <form

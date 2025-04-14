@@ -9,25 +9,68 @@ import Link from "next/link";
 export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const getUsers = async () => {
-    const result = await pb.collection("users").getFullList({
-      expand: "roles",
-      sort: "name",
-    });
+    try {
+      const result = await pb.collection("users").getFullList({
+        expand: "roles",
+        sort: "name",
+      });
 
-    const mapped: User[] = result.map((u: any) => ({
-      id: u.id,
-      email: u.email,
-      name: u.name,
-      roles: u.expand?.roles || [],
-    }));
+      const mapped: User[] = result.map((u: any) => ({
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        roles: u.expand?.roles || [],
+      }));
 
-    setUsers(mapped);
+      setUsers(mapped);
+      setHasAccess(true);
+    } catch (err) {
+      console.error("Keine Berechtigung oder Fehler beim Laden:", err);
+      setHasAccess(false);
+    }
   };
+
   useEffect(() => {
-    getUsers();
+    const permissions: string[] =
+      pb.authStore.model?.expand?.roles?.flatMap((role: any) =>
+        role.expand?.permissions?.map((p: any) => p.permission)
+      ) || [];
+
+    if (permissions.includes("list_read")) {
+      getUsers();
+    } else {
+      setHasAccess(false);
+    }
   }, []);
+
+  const userId = pb.authStore.model?.id;
+
+  if (hasAccess === null) {
+    return <div className="text-center mt-20 text-gray-500">Lade...</div>;
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex justify-center text-black items-center p-8">
+        <div className="bg-white p-6 rounded shadow-md w-full max-w-md text-center space-y-4">
+          <h2 className="text-2xl font-semibold text-red-600">
+            Zum Profil
+          </h2>
+          <p>Klicke auf den Button um auf deine Profilansicht zu kommen.</p>
+          {userId && (
+            <button
+              onClick={() => router.push(`/pages/userProfile/${userId}`)}
+              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            >
+              Mein Profil ansehen
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center text-black items-start py-16 px-4">
@@ -50,11 +93,11 @@ export default function UsersPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id} className={"border-b border-gray-300"}>
+            {users.map((user) => (
+              <tr key={user.id} className="border-b border-gray-300">
                 <td className="py-2">{user.name}</td>
                 <td className="py-2">
-                  {user.roles.map((r) => r.role).join(" & ")}
+                  {user.roles.map((r: any) => r.role).join(" & ")}
                 </td>
                 <td className="py-2 text-right pr-4 text-gray-500">
                   <Link

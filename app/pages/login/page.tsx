@@ -22,10 +22,29 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await pb
-      .collection("users")
-      .authWithPassword(formData.user, formData.password);
-    router.push("/");
+
+    try {
+      const userRecord = await pb
+        .collection("users")
+        .authWithPassword(formData.user, formData.password);
+
+      try {
+        const expanded = await pb
+          .collection("users")
+          .getOne(userRecord.record.id, {
+            expand: "roles.permissions",
+          });
+
+        pb.authStore.save(userRecord.token, expanded);
+      } catch (err) {
+        pb.authStore.save(userRecord.token, userRecord.record);
+      }
+
+      router.push("/");
+    } catch (err) {
+      console.error("Login fehlgeschlagen:", err);
+      alert("Login fehlgeschlagen");
+    }
   };
 
   return (

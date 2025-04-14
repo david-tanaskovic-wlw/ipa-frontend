@@ -6,6 +6,8 @@ import pb from "@/app/hooks/usePocketBase";
 import type { Role } from "@/app/lib/types";
 
 export default function UserProfilePage() {
+  const [isEditable, setIsEditable] = useState(false);
+
   const router = useRouter();
   const params = useParams();
   const userId = params.id as string;
@@ -21,6 +23,13 @@ export default function UserProfilePage() {
       const record = await pb.collection("users").getOne(userId, {
         expand: "roles",
       });
+
+      const currentUserPermissions =
+        pb.authStore.model?.expand?.roles?.flatMap((r: any) =>
+          r.expand?.permissions?.map((p: any) => p.permission)
+        ) || [];
+
+      setIsEditable(currentUserPermissions.includes("user_edit"));
 
       setFormData({
         name: record.name,
@@ -47,6 +56,7 @@ export default function UserProfilePage() {
   };
 
   const handleUpdate = async () => {
+    if (!isEditable) return;
     const confirmed = confirm("Möchtest du die Änderungen wirklich speichern?");
     if (!confirmed) return;
 
@@ -66,6 +76,7 @@ export default function UserProfilePage() {
   };
 
   const handleDelete = async () => {
+    if (!isEditable) return;
     const confirmed = confirm("Möchtest du diesen Benutzer wirklich löschen?");
     if (!confirmed) return;
 
@@ -76,7 +87,9 @@ export default function UserProfilePage() {
   return (
     <div className="min-h-screen flex justify-center items-center bg-white p-6">
       <div className="w-full max-w-md border rounded shadow p-6 space-y-4 text-black">
-        <h1 className="text-2xl font-bold mb-4">Profil bearbeiten</h1>
+        <h1 className="text-2xl font-bold mb-4">
+          {isEditable ? "Profil bearbeiten" : "Profil"}
+        </h1>
         <title>Profilansicht</title>
 
         <div>
@@ -85,7 +98,12 @@ export default function UserProfilePage() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded bg-gray-100"
+            disabled={!isEditable}
+            className={`w-full border px-3 py-2 rounded ${
+              isEditable
+                ? "bg-gray-100"
+                : "bg-gray-100 text-gray-500 cursor-not-allowed"
+            }`}
           />
         </div>
 
@@ -95,48 +113,49 @@ export default function UserProfilePage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded bg-gray-100"
+            disabled={!isEditable}
+            className={`w-full border px-3 py-2 rounded ${
+              isEditable
+                ? "bg-gray-100"
+                : "bg-gray-100 text-gray-500 cursor-not-allowed"
+            }`}
           />
         </div>
 
         <div>
           <label className="block mb-1 font-medium">Rollen</label>
           <div className="space-y-1 ml-2">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.roles.includes("partner")}
-                onChange={() => handleRoleChange("partner")}
-                className="mr-2"
-              />
-              Partner
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.roles.includes("donor")}
-                onChange={() => handleRoleChange("donor")}
-                className="mr-2"
-              />
-              Donor
-            </label>
+            {["partner", "donor"].map((role) => (
+              <label key={role} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.roles.includes(role as Role)}
+                  onChange={() => handleRoleChange(role as Role)}
+                  disabled={!isEditable}
+                  className="mr-2"
+                />
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </label>
+            ))}
           </div>
         </div>
 
-        <div className="flex gap-4 mt-6">
-          <button
-            onClick={handleUpdate}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
-          >
-            Update Info
-          </button>
-          <button
-            onClick={handleDelete}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-          >
-            Delete User
-          </button>
-        </div>
+        {isEditable && (
+          <div className="flex gap-4 mt-6">
+            <button
+              onClick={handleUpdate}
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
+            >
+              Update Info
+            </button>
+            <button
+              onClick={handleDelete}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+            >
+              Delete User
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
