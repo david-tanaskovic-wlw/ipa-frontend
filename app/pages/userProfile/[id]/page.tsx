@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
 import type { Role } from "@/app/lib/types";
+import { useTranslation } from "react-i18next";
+import "@/i18n";
 
 export default function UserProfilePage() {
+  const { t } = useTranslation();
   const [isEditable, setIsEditable] = useState(false);
 
   const router = useRouter();
@@ -85,12 +88,12 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-white p-6">
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
       <div className="w-full max-w-md border rounded shadow p-6 space-y-4 text-black">
         <h1 className="text-2xl font-bold mb-4">
-          {isEditable ? "Profil bearbeiten" : "Profil"}
+          {isEditable ? t("profileView.profile") : t("profileView.title")}
         </h1>
-        <title>Profilansicht</title>
+        <title> {t("profileView.title")}</title>
 
         <div>
           <label className="block mb-1 font-medium">Name</label>
@@ -123,7 +126,9 @@ export default function UserProfilePage() {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Rollen</label>
+          <label className="block mb-1 font-medium">
+            {t("profileView.role")}
+          </label>
           <div className="space-y-1 ml-2">
             {["partner", "donor"].map((role) => (
               <label key={role} className="flex items-center">
@@ -134,7 +139,7 @@ export default function UserProfilePage() {
                   disabled={!isEditable}
                   className="mr-2"
                 />
-                {role.charAt(0).toUpperCase() + role.slice(1)}
+                {t(`profileView.roles.${role}`)}{" "}
               </label>
             ))}
           </div>
@@ -146,13 +151,13 @@ export default function UserProfilePage() {
               onClick={handleUpdate}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
             >
-              Update Info
+              {t("profileView.editButton")}
             </button>
             <button
               onClick={handleDelete}
               className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
             >
-              Delete User
+              {t("profileView.deleteButton")}
             </button>
           </div>
         )}

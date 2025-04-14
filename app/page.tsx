@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
 import type { User } from "@/app/lib/types";
 import Link from "next/link";
+import "@/i18n";
+import { useTranslation } from "react-i18next";
 
 export default function UsersPage() {
+  const { t } = useTranslation();
+
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -48,7 +52,11 @@ export default function UsersPage() {
   const userId = pb.authStore.model?.id;
 
   if (hasAccess === null) {
-    return <div className="text-center mt-20 text-gray-500">Lade...</div>;
+    return (
+      <div className="text-center mt-20 text-gray-500">
+        {t("userList.loading")}
+      </div>
+    );
   }
 
   if (!hasAccess) {
@@ -56,15 +64,15 @@ export default function UsersPage() {
       <div className="min-h-screen bg-gray-100 flex justify-center text-black items-center p-8">
         <div className="bg-white p-6 rounded shadow-md w-full max-w-md text-center space-y-4">
           <h2 className="text-2xl font-semibold text-red-600">
-            Zum Profil
+            {t("userList.profileHeader")}
           </h2>
-          <p>Klicke auf den Button um auf deine Profilansicht zu kommen.</p>
+          <p>{t("userList.profileText")}</p>
           {userId && (
             <button
               onClick={() => router.push(`/pages/userProfile/${userId}`)}
               className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
             >
-              Mein Profil ansehen
+              {t("userList.profileButton")}
             </button>
           )}
         </div>
@@ -75,11 +83,11 @@ export default function UsersPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center text-black items-start py-16 px-4">
       <div className="bg-white shadow-md rounded-md w-full max-w-3xl px-6 py-8">
-        <h1 className="text-3xl font-bold mb-6">Users</h1>
-        <title>Nutzerliste</title>
+        <h1 className="text-3xl font-bold mb-6">{t("userList.users")}</h1>
+        <title>{t("userList.userList")}</title>
         <input
           type="text"
-          placeholder="Search users..."
+          placeholder={t("userList.searchBar")}
           disabled //todo: suchfunktion
           className="mb-6 p-2 rounded border border-gray-300 rounded-md w-full max-w-3xl"
         />
@@ -88,7 +96,7 @@ export default function UsersPage() {
           <thead>
             <tr className="text-left text-gray-600 border-b bg-gray-100 border-gray-300">
               <th className="py-2">Name</th>
-              <th className="py-2">Role</th>
+              <th className="py-2">{t("userList.role")}</th>
               <th className="py-2 text-right pr-4">...</th>
             </tr>
           </thead>
@@ -97,7 +105,7 @@ export default function UsersPage() {
               <tr key={user.id} className="border-b border-gray-300">
                 <td className="py-2">{user.name}</td>
                 <td className="py-2">
-                  {user.roles.map((r: any) => r.role).join(" & ")}
+                  {user.roles.map((r: any) => t(`userList.roles.${r.role}`)).join(" & ")}
                 </td>
                 <td className="py-2 text-right pr-4 text-gray-500">
                   <Link
@@ -117,7 +125,7 @@ export default function UsersPage() {
             onClick={() => router.push("/pages/register")}
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
           >
-            Create User
+            {t("userList.registerButton")}
           </button>
         </div>
       </div>

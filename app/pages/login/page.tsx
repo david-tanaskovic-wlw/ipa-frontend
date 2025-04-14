@@ -4,8 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
 import type { LoginForm } from "@/app/lib/types";
+import { useTranslation } from "react-i18next";
+import "@/i18n";
 
 export default function LoginPage() {
+  const { t, i18n } = useTranslation();
+
   const router = useRouter();
 
   const [formData, setFormData] = useState<LoginForm>({
@@ -53,8 +57,8 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-        <title>Login</title>
+        <h1 className="text-2xl font-bold mb-6 text-center">{t("login.loginText")}</h1>
+        <title>{t("login.loginText")}</title>
 
         <label className="block mb-2 text-sm font-medium">E-Mail</label>
         <input
@@ -67,7 +71,7 @@ export default function LoginPage() {
           required
         />
 
-        <label className="block mb-2 text-sm font-medium">Passwort</label>
+        <label className="block mb-2 text-sm font-medium">{t("login.passwordText")}</label>
         <input
           name="password"
           type="password"
@@ -81,7 +85,7 @@ export default function LoginPage() {
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
         >
-          Anmelden
+          {t("login.loginText")}
         </button>
       </form>
     </div>

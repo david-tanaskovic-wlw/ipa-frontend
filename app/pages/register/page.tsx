@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import pb from "@/app/hooks/usePocketBase";
 import type { RegisterForm, Role } from "@/app/lib/types";
+import { useTranslation } from "react-i18next";
+import "@/i18n";
 
 export default function RegisterPage() {
+  const [t] = useTranslation();
   const [formData, setFormData] = useState<RegisterForm>({
     name: "",
     email: "",
@@ -62,10 +65,10 @@ export default function RegisterPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 text-red-600 px-4">
         <div className="text-center bg-white p-8 shadow-md rounded-md max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-4">Keine Berechtigung</h1>
-          <p className="text-gray-700">
-            Du hast keine Berechtigung, um neue Benutzer zu erstellen.
-          </p>
+          <h1 className="text-2xl font-bold mb-4">
+            {t("register.noPermsHeader")}
+          </h1>
+          <p className="text-gray-700">{t("register.noPermsText")} </p>
         </div>
       </div>
     );
@@ -76,8 +79,10 @@ export default function RegisterPage() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">Register User</h1>
-        <title>Register</title>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          {t("register.registerText")}
+        </h1>
+        <title>{t("register.registerText")}</title>
 
         <label className="block mb-2 text-sm font-medium">Name</label>
         <input
@@ -100,7 +105,9 @@ export default function RegisterPage() {
           required
         />
 
-        <label className="block mb-2 text-sm font-medium">Password</label>
+        <label className="block mb-2 text-sm font-medium">
+          {t("register.passwordText")}
+        </label>
         <input
           name="password"
           type="password"
@@ -111,7 +118,7 @@ export default function RegisterPage() {
         />
 
         <div className="mb-6">
-          <p className="mb-2 text-sm font-medium">Roles</p>
+          <p className="mb-2 text-sm font-medium">{t("register.rolesText")}</p>
           <div className="flex flex-col gap-2">
             <label className="flex items-center">
               <input
@@ -129,7 +136,7 @@ export default function RegisterPage() {
                 onChange={() => handleRoleChange("donor")}
                 className="mr-2"
               />
-              Donor
+              {t("register.donor")}
             </label>
           </div>
         </div>
@@ -138,8 +145,8 @@ export default function RegisterPage() {
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
         >
-          Create
-        </button>
+              {t("register.registerButton")}
+              </button>
       </form>
     </div>
   );
