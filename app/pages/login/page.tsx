@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
 import type { LoginForm } from "@/app/lib/types";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import "@/i18n";
 
 export default function LoginPage() {
-  const { t, i18n } = useTranslation();
-
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [formData, setFormData] = useState<LoginForm>({
@@ -41,15 +41,17 @@ export default function LoginPage() {
           });
 
         pb.authStore.save(userRecord.token, expanded);
-      } catch (err) {
+      } catch {
         pb.authStore.save(userRecord.token, userRecord.record);
       }
 
-      router.push("/");
-      window.location.reload();
-    } catch (err) {
-      console.error("Login fehlgeschlagen:", err);
-      alert("Login fehlgeschlagen");
+      toast.success(t("login.success"));
+      setTimeout(() => {
+        router.push("/")
+        window.location.reload();
+      }, 1000);
+    } catch {
+      toast.error(t("login.failed"));
     }
   };
 

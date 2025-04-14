@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import "./globals.css";
 import NavBar from "./components/Navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <LanguageSwitcher />
         <NavBar/>
         {children}
+        <Toaster/>
       </body>
     </html>
   );

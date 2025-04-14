@@ -37,6 +37,8 @@ i18n
           login: {
             passwordText: "Password",
             loginText: "Login",
+            failed: "Login failed",
+            success: "Login successful",
           },
           register: {
             registerText: "Register User",
@@ -46,6 +48,8 @@ i18n
             noPermsHeader: "No Permissions",
             noPermsText: "You don't have permissions to register a user.",
             donor: "Donor",
+            successMessage: "User created successfully.",
+            errorMessage: "Error creating user.",
           },
           userList: {
             loading: "Loading...",
@@ -79,6 +83,10 @@ i18n
             editProfile: "Edit Profile",
             editButton: "Update Information",
             deleteButton: "Delete User",
+            userDeleted:
+              "User deleted successfully. You will be redirected to the user list.",
+            userUpdated:
+              "User updated successfully. You will be redirected to the user list.",
           },
           navbar: {
             profile: "My profile",
@@ -86,16 +94,19 @@ i18n
             registerUser: "Create User",
             logout: "Logout",
             confirmation: "Are you sure you want to log out?",
+            loggedOut: "You have been logged out.",
           },
         },
       },
+
       de: {
         translation: {
           login: {
             passwordText: "Passwort",
             loginText: "Anmelden",
+            failed: "Anmeldung fehlgeschlagen",
+            success: "Erfolgreich angemeldet",
           },
-
           register: {
             registerText: "Nutzer registrieren",
             passwordText: "Passwort",
@@ -105,6 +116,8 @@ i18n
             noPermsText:
               "Du hast keine Berechtigung, um neue Benutzer zu erstellen.",
             donor: "Spender",
+            successMessage: "Benutzer erfolgreich erstellt.",
+            errorMessage: "Fehler beim Erstellen des Benutzers.",
           },
           userList: {
             loading: "Lade...",
@@ -140,6 +153,10 @@ i18n
             editProfile: "Profil bearbeiten",
             editButton: "Informationen ändern",
             deleteButton: "Benutzer löschen",
+            userDeleted:
+              "Benutzer erfolgreich gelöscht. Du wirst zur Nutzerliste weitergeleitet.",
+              userUpdated:
+              "Benutzer erfolgreich aktualisiert. Du wirst zur Nutzerliste weitergeleitet.",
           },
           navbar: {
             profile: "Mein Profil",
@@ -147,6 +164,7 @@ i18n
             registerUser: "Nutzer erstellen",
             logout: "Abmelden",
             confirmation: "Bist du sicher, dass du dich abmelden möchtest?",
+            loggedOut: "Du hast dich abgemeldet.",
           },
         },
       },

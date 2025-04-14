@@ -1,5 +1,5 @@
 "use client";
-
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import pb from "@/app/hooks/usePocketBase";
 import type { RegisterForm, Role } from "@/app/lib/types";
@@ -46,19 +46,25 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const roleRecords = await pb.collection("roles").getFullList({
-      filter: formData.roles.map((role) => `role = "${role}"`).join(" || "),
-    });
-    const roleIds = roleRecords.map((r) => r.id);
+    try {
+      const roleRecords = await pb.collection("roles").getFullList({
+        filter: formData.roles.map((role) => `role = "${role}"`).join(" || "),
+      });
+      const roleIds = roleRecords.map((r) => r.id);
 
-    await pb.collection("users").create({
-      email: formData.email,
-      password: formData.password,
-      passwordConfirm: formData.password,
-      emailVisibility: true,
-      name: formData.name,
-      roles: roleIds,
-    });
+      await pb.collection("users").create({
+        email: formData.email,
+        password: formData.password,
+        passwordConfirm: formData.password,
+        emailVisibility: true,
+        name: formData.name,
+        roles: roleIds,
+      });
+
+      toast.success(t("register.successMessage"));
+    } catch {
+      toast.error("register.errorMessage");
+    }
   };
 
   if (hasPermission === false) {
@@ -145,8 +151,8 @@ export default function RegisterPage() {
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
         >
-              {t("register.registerButton")}
-              </button>
+          {t("register.registerButton")}
+        </button>
       </form>
     </div>
   );

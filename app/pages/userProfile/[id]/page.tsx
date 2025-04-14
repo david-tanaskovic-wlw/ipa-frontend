@@ -6,6 +6,7 @@ import pb from "@/app/hooks/usePocketBase";
 import type { Role } from "@/app/lib/types";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
+import { toast } from "sonner";
 
 export default function UserProfilePage() {
   const { t } = useTranslation();
@@ -75,8 +76,9 @@ export default function UserProfilePage() {
       email: formData.email,
       roles: roleIds,
     });
-
-    router.push("/");
+    toast.success(t("profileView.userUpdated"));
+    setTimeout(() => {
+    router.push("/");}, 1000);
   };
 
   const handleDelete = async () => {
@@ -85,12 +87,14 @@ export default function UserProfilePage() {
     if (!confirmed) return;
 
     await pb.collection("users").delete(userId);
-    router.push("/");
+    toast.success(t("profileView.userDeleted"));
+    setTimeout(() => {
+    router.push("/");}, 1000);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
-      <div className="w-full max-w-md border rounded shadow p-6 space-y-4 text-black">
+      <div className="w-full bg-white max-w-md border rounded shadow p-6 space-y-4 text-black">
         <h1 className="text-2xl font-bold mb-4">
           {isEditable ? t("profileView.profile") : t("profileView.title")}
         </h1>

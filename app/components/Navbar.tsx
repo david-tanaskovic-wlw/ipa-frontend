@@ -6,6 +6,7 @@ import Link from "next/link";
 import pb from "@/app/hooks/usePocketBase";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner"; 
 
 export default function NavBar() {
   const { t } = useTranslation();
@@ -33,12 +34,13 @@ export default function NavBar() {
     if (!confirmed) return;
     pb.authStore.clear();
     window.location.reload();
+    toast.success(t("navbar.loggedOut"));
     router.replace("/pages/login");
   };
 
   if (!userId) return null;
   return (
-    <nav className=" top-0 left-0 bg-gray-200 text-black shadow px-4 py-3 flex gap-4 text-sm">
+    <nav className="top-0 left-0 bg-gray-200 text-black shadow px-2 py-3 flex gap-4 text-sm">
       <Link href="/" className="hover:underline">
         Home
       </Link>
@@ -61,7 +63,7 @@ export default function NavBar() {
 
       <button
         onClick={logout}
-        className="text-white bg-red-600 hover:bg-red-700 px-4 py-1 rounded"
+        className="text-white bg-red-600 hover:bg-red-700 px-2 py-1 rounded"
       >
         {t("navbar.logout")}
       </button>
