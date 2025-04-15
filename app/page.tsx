@@ -25,23 +25,34 @@ export default function UsersPage() {
   const [perPage, setPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const getUsers = async (page: number, perPage: number) => {
     try {
+      const roleFilter =
+        selectedRoles.length > 0
+          ? `(${selectedRoles.map((r) => `roles.role="${r}"`).join(" || ")})`
+          : "";
+  
+      const nameFilter = `name~"${searchTerm}"`;
+      const combinedFilter =
+        roleFilter && nameFilter ? `${nameFilter} && ${roleFilter}` : nameFilter || roleFilter;
+  
       const result = await pb.collection("users").getList(page, perPage, {
         expand: "roles",
-        sort: "name",
+        sort: sortOrder === "asc" ? "name" : "-name",
         requestKey: null,
-        filter: `name~"${searchTerm}"`
+        filter: combinedFilter,
       });
-
+  
       const mapped: User[] = result.items.map((u: any) => ({
         id: u.id,
         email: u.email,
         name: u.name,
         roles: u.expand?.roles || [],
       }));
-
+  
       setUsers(mapped);
       setTotalPages(result.totalPages);
       setHasAccess(true);
@@ -62,7 +73,7 @@ export default function UsersPage() {
     } else {
       setHasAccess(false);
     }
-  }, [currentPage, perPage, searchTerm]);
+  }, [currentPage, perPage, searchTerm, selectedRoles, sortOrder]);
 
   const userId = pb.authStore.model?.id;
 
@@ -110,11 +121,35 @@ export default function UsersPage() {
           }}
           className="mb-6 p-2 rounded border border-gray-300 rounded-md w-full max-w-3xl"
         />
+        <div className="mb-4 flex gap-4 flex-wrap">
+          {["admin", "donor", "partner"].map((role) => (
+            <label key={role} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedRoles.includes(role)}
+                onChange={() => {
+                  setCurrentPage(1);
+                  setSelectedRoles((prev) =>
+                    prev.includes(role)
+                      ? prev.filter((r) => r !== role)
+                      : [...prev, role]
+                  );
+                }}
+              />
+              {t(`userList.roles.${role}`)}
+            </label>
+          ))}
+        </div>
 
         <table className="w-full border-t border-b border-gray-300">
           <thead>
             <tr className="text-left text-gray-600 border-b bg-gray-100 border-gray-300">
-              <th className="py-2">Name</th>
+            <th
+  className="py-2 cursor-pointer select-none"
+  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+>
+  Name {sortOrder === "asc" ? "↑" : "↓"}
+</th>
               <th className="py-2">{t("userList.role")}</th>
               <th className="py-2 text-right pr-4">...</th>
             </tr>
