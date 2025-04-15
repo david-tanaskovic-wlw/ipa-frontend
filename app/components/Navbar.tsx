@@ -40,7 +40,7 @@ export default function NavBar() {
 
   if (!userId) return null;
   return (
-    <nav className="top-0 left-0 bg-gray-200 text-black shadow px-2 py-3 flex gap-4 text-sm">
+    <nav className="top-0 left-0 justify-center bg-gray-200 text-black shadow px-2 py-3 flex gap-4 text-sm">
       <Link href="/" className="hover:underline">
         Home
       </Link>
