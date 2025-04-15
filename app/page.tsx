@@ -34,25 +34,27 @@ export default function UsersPage() {
         selectedRoles.length > 0
           ? `(${selectedRoles.map((r) => `roles.role="${r}"`).join(" || ")})`
           : "";
-  
+
       const nameFilter = `name~"${searchTerm}"`;
       const combinedFilter =
-        roleFilter && nameFilter ? `${nameFilter} && ${roleFilter}` : nameFilter || roleFilter;
-  
+        roleFilter && nameFilter
+          ? `${nameFilter} && ${roleFilter}`
+          : nameFilter || roleFilter;
+
       const result = await pb.collection("users").getList(page, perPage, {
         expand: "roles",
         sort: sortOrder === "asc" ? "name" : "-name",
         requestKey: null,
         filter: combinedFilter,
       });
-  
+
       const mapped: User[] = result.items.map((u: any) => ({
         id: u.id,
         email: u.email,
         name: u.name,
         roles: u.expand?.roles || [],
       }));
-  
+
       setUsers(mapped);
       setTotalPages(result.totalPages);
       setHasAccess(true);
@@ -144,12 +146,14 @@ export default function UsersPage() {
         <table className="w-full border-t border-b border-gray-300">
           <thead>
             <tr className="text-left text-gray-600 border-b bg-gray-100 border-gray-300">
-            <th
-  className="py-2 cursor-pointer select-none"
-  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
->
-  Name {sortOrder === "asc" ? "↑" : "↓"}
-</th>
+              <th
+                className="py-2 cursor-pointer select-none"
+                onClick={() =>
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                }
+              >
+                Name {sortOrder === "asc" ? "↑" : "↓"}
+              </th>
               <th className="py-2">{t("userList.role")}</th>
               <th className="py-2 text-right pr-4">...</th>
             </tr>
