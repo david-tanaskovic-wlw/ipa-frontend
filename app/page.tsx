@@ -18,7 +18,7 @@ import {
 
 export default function UsersPage() {
   const { t } = useTranslation();
-
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,6 +32,7 @@ export default function UsersPage() {
         expand: "roles",
         sort: "name",
         requestKey: null,
+        filter: `name~"${searchTerm}"`
       });
 
       const mapped: User[] = result.items.map((u: any) => ({
@@ -61,7 +62,7 @@ export default function UsersPage() {
     } else {
       setHasAccess(false);
     }
-  }, [currentPage, perPage]);
+  }, [currentPage, perPage, searchTerm]);
 
   const userId = pb.authStore.model?.id;
 
@@ -102,7 +103,11 @@ export default function UsersPage() {
         <input
           type="text"
           placeholder={t("userList.searchBar")}
-          disabled //todo: suchfunktion
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
           className="mb-6 p-2 rounded border border-gray-300 rounded-md w-full max-w-3xl"
         />
 
