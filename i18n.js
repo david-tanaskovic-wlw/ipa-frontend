@@ -66,6 +66,10 @@ i18n
               partner: "Partner",
               admin: "Admin",
             },
+            errorText: "No permissions or error loading users:",
+            entries: "Entries:",
+            previous: "Previous",
+            next: "Next",
           },
           profileView: {
             title: "Profile View",
@@ -135,6 +139,10 @@ i18n
               partner: "Partner",
               admin: "Administrator",
             },
+            errorText: "Keine Berechtigung oder Fehler beim Laden:",
+            entries: "Einträge:",
+            previous: "Zurück",
+            next: "Vor",
           },
           profileView: {
             title: "Profilansicht",
@@ -155,7 +163,7 @@ i18n
             deleteButton: "Benutzer löschen",
             userDeleted:
               "Benutzer erfolgreich gelöscht. Du wirst zur Nutzerliste weitergeleitet.",
-              userUpdated:
+            userUpdated:
               "Benutzer erfolgreich aktualisiert. Du wirst zur Nutzerliste weitergeleitet.",
           },
           navbar: {

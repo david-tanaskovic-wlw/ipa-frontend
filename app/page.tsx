@@ -7,22 +7,34 @@ import type { User } from "@/app/lib/types";
 import Link from "next/link";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function UsersPage() {
   const { t } = useTranslation();
 
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const getUsers = async () => {
+
+  const getUsers = async (page: number, perPage: number) => {
     try {
-      const result = await pb.collection("users").getFullList({
+      const result = await pb.collection("users").getList(page, perPage, {
         expand: "roles",
         sort: "name",
-        requestKey: null
+        requestKey: null,
       });
 
-      const mapped: User[] = result.map((u: any) => ({
+      const mapped: User[] = result.items.map((u: any) => ({
         id: u.id,
         email: u.email,
         name: u.name,
@@ -30,9 +42,10 @@ export default function UsersPage() {
       }));
 
       setUsers(mapped);
+      setTotalPages(result.totalPages);
       setHasAccess(true);
     } catch (err) {
-      console.error("Keine Berechtigung oder Fehler beim Laden:", err);
+      console.error(t("userList.errorText"), err);
       setHasAccess(false);
     }
   };
@@ -44,11 +57,11 @@ export default function UsersPage() {
       ) || [];
 
     if (permissions.includes("list_read")) {
-      getUsers();
+      getUsers(currentPage, perPage);
     } else {
       setHasAccess(false);
     }
-  }, []);
+  }, [currentPage, perPage]);
 
   const userId = pb.authStore.model?.id;
 
@@ -106,7 +119,9 @@ export default function UsersPage() {
               <tr key={user.id} className="border-b border-gray-300">
                 <td className="py-2">{user.name}</td>
                 <td className="py-2">
-                  {user.roles.map((r: any) => t(`userList.roles.${r.role}`)).join(" & ")}
+                  {user.roles
+                    .map((r: any) => t(`userList.roles.${r.role}`))
+                    .join(" & ")}
                 </td>
                 <td className="py-2 text-right pr-4 text-gray-500">
                   <Link
@@ -120,6 +135,63 @@ export default function UsersPage() {
             ))}
           </tbody>
         </table>
+
+        <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+                  }}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(i + 1);
+                    }}
+                    isActive={i + 1 === currentPage}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages)
+                      setCurrentPage((prev) => prev + 1);
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+
+          <div className="flex items-center gap-2">
+            <label htmlFor="perPage" className="text-sm">
+              {t("userList.entries")}
+            </label>
+            <input
+              id="perPage"
+              type="number"
+              min={1}
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="w-16 border px-2 py-1 rounded text-sm"
+            />
+          </div>
+        </div>
 
         <div className="mt-10 flex justify-center">
           <button
