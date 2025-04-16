@@ -30,6 +30,9 @@ i18n
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
+    detection: {
+      order: ["navigator"],
+    },
 
     resources: {
       en: {
@@ -142,8 +145,7 @@ i18n
             donor: "Spender",
             successMessage: "Benutzer erfolgreich erstellt.",
             errorMessage: "Fehler beim Erstellen des Benutzers.",
-            noRole: "Bitte wähle mindestens eine Rolle aus."
-
+            noRole: "Bitte wähle mindestens eine Rolle aus.",
           },
           userList: {
             loading: "Lade...",
