@@ -121,11 +121,8 @@ export default function UserProfilePage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            disabled={!isEditable}
-            className={`w-full border px-3 py-2 rounded ${
-              isEditable
-                ? "bg-gray-100"
-                : "bg-gray-100 text-gray-500 cursor-not-allowed"
+            disabled
+            className={`w-full border px-3 py-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
             }`}
           />
         </div>
