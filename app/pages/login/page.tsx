@@ -1,103 +1,96 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import pb from "@/app/hooks/usePocketBase";
-import type { LoginForm } from "@/app/lib/types";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import "@/i18n";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import pb from "@/app/hooks/usePocketBase"
+import type { LoginForm } from "@/app/lib/types"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+import "@/i18n"
 
 export default function LoginPage() {
-  const [passwordResetRequested, setPasswordResetRequested] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const { t } = useTranslation();
-  const router = useRouter();
+  const [passwordResetRequested, setPasswordResetRequested] = useState(false)
+  const [resetEmail, setResetEmail] = useState("")
+  const { t } = useTranslation()
+  const router = useRouter()
 
   const [formData, setFormData] = useState<LoginForm>({
     user: "",
-    password: "",
-  });
+    password: ""
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+      [e.target.name]: e.target.value
+    }))
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       const userRecord = await pb
         .collection("users")
-        .authWithPassword(formData.user, formData.password);
+        .authWithPassword(formData.user, formData.password)
 
       try {
-        const expanded = await pb
-          .collection("users")
-          .getOne(userRecord.record.id, {
-            expand: "roles.permissions",
-            requestKey: null,
-          });
+        const expanded = await pb.collection("users").getOne(userRecord.record.id, {
+          expand: "roles.permissions",
+          requestKey: null
+        })
 
-        pb.authStore.save(userRecord.token, expanded);
+        pb.authStore.save(userRecord.token, expanded)
       } catch {
-        pb.authStore.save(userRecord.token, userRecord.record);
+        pb.authStore.save(userRecord.token, userRecord.record)
       }
 
-      toast.success(t("login.success"));
+      toast.success(t("login.success"))
       setTimeout(() => {
-        router.push("/");
-        window.location.reload();
-      }, 1000);
+        router.push("/")
+        window.location.reload()
+      }, 1000)
     } catch {
-      toast.error(t("login.failed"));
+      toast.error(t("login.failed"))
     }
-  };
+  }
   const handleResetEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setResetEmail(e.target.value);
-  };
+    setResetEmail(e.target.value)
+  }
 
   const requestPasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!resetEmail) {
-      toast.error(t("resetPassword.emptyEmail"));
-      return;
+      toast.error(t("resetPassword.emptyEmail"))
+      return
     }
     if (!/\S+@\S+\.\S+/.test(resetEmail)) {
-      toast.error(t("resetPassword.invalidEmail"));
-      return;
+      toast.error(t("resetPassword.invalidEmail"))
+      return
     }
 
     try {
       const result = await pb.collection("users").getFullList({
-        filter: `email="${resetEmail}"`,
-      });
+        filter: `email="${resetEmail}"`
+      })
 
       if (result.length === 0) {
-        toast.error(t("resetPassword.emailNotFound"));
-        return;
+        toast.error(t("resetPassword.emailNotFound"))
+        return
       }
 
-      await pb.collection("users").requestPasswordReset(resetEmail);
-      toast.success(t("resetPassword.emailSent"));
+      await pb.collection("users").requestPasswordReset(resetEmail)
+      toast.success(t("resetPassword.emailSent"))
     } catch {
-      toast.error(t("resetPassword.emailError"));
+      toast.error(t("resetPassword.emailError"))
     }
-  };
+  }
 
   return (
     <div className="bg-gray-50 text-gray-900 min-h-screen flex items-center justify-center px-4">
       {!passwordResetRequested ? (
-        <form
-          onSubmit={handleLogin}
-          className="bg-white p-8 rounded shadow-md w-full max-w-sm"
-        >
-          <h1 className="text-2xl font-bold mb-6 text-center">
-            {t("login.loginText")}
-          </h1>
+        <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
+          <h1 className="text-2xl font-bold mb-6 text-center">{t("login.loginText")}</h1>
           <title>{t("login.loginText")}</title>
 
           <label className="block mb-2 text-sm font-medium">E-Mail</label>
@@ -111,9 +104,7 @@ export default function LoginPage() {
             required
           />
 
-          <label className="block mb-2 text-sm font-medium">
-            {t("login.passwordText")}
-          </label>
+          <label className="block mb-2 text-sm font-medium">{t("login.passwordText")}</label>
           <input
             name="password"
             type="password"
@@ -164,5 +155,5 @@ export default function LoginPage() {
         </form>
       )}
     </div>
-  );
+  )
 }

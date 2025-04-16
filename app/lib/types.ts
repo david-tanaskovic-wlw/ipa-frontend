@@ -1,40 +1,40 @@
 export type LoginForm = {
-  user: string;
-  password: string;
-};
+  user: string
+  password: string
+}
 
-export type Role = "partner" | "donor";
+export type Role = "partner" | "donor"
 
 export type RegisterForm = {
-  name: string;
-  email: string;
-  password: string;
-  roles: Role[];
-};
+  name: string
+  email: string
+  password: string
+  roles: Role[]
+}
 
 export type User = {
-  id: string;
-  email: string;
-  name: string;
-  roles: Role[];
-};
+  id: string
+  email: string
+  name: string
+  roles: Role[]
+}
 
 export type Permission = {
-  permission: string;
-};
+  permission: string
+}
 
 export type PocketbaseRole = {
-  role: string;
+  role: string
   expand?: {
-    permissions?: Permission[];
-  };
-};
+    permissions?: Permission[]
+  }
+}
 
 export type PocketbaseUser = {
-  id: string;
-  email: string;
-  name: string;
+  id: string
+  email: string
+  name: string
   expand?: {
-    roles: PocketbaseRole[];
-  };
-};
+    roles: PocketbaseRole[]
+  }
+}

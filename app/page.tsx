@@ -1,110 +1,102 @@
-"use client";
+"use client"
 
-import { useCallback } from "react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import pb from "@/app/hooks/usePocketBase";
-import type { Permission, PocketbaseRole, User } from "@/app/lib/types";
-import Link from "next/link";
-import "@/i18n";
-import { useTranslation } from "react-i18next";
+import { useCallback } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import pb from "@/app/hooks/usePocketBase"
+import type { Permission, PocketbaseRole, User } from "@/app/lib/types"
+import Link from "next/link"
+import "@/i18n"
+import { useTranslation } from "react-i18next"
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  PaginationPrevious
+} from "@/components/ui/pagination"
 
 export default function UsersPage() {
-  const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState("");
-  const router = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(5);
-  const [totalPages, setTotalPages] = useState(1);
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const { t } = useTranslation()
+  const [searchTerm, setSearchTerm] = useState("")
+  const router = useRouter()
+  const [users, setUsers] = useState<User[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [perPage, setPerPage] = useState(5)
+  const [totalPages, setTotalPages] = useState(1)
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([])
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
 
   useEffect(() => {
     if (!pb.authStore.isValid) {
-      router.replace("/pages/login");
+      router.replace("/pages/login")
     }
-  }, [router]);
+  }, [router])
   const getUsers = useCallback(
     async (page: number, perPage: number) => {
       if (!pb.authStore.isValid) {
-        return;
+        return
       }
       try {
         const roleFilter =
           selectedRoles.length > 0
             ? `(${selectedRoles.map((r) => `roles.role="${r}"`).join(" || ")})`
-            : "";
+            : ""
 
-        const nameFilter = `name~"${searchTerm}"`;
+        const nameFilter = `name~"${searchTerm}"`
         const combinedFilter =
-          roleFilter && nameFilter
-            ? `${nameFilter} && ${roleFilter}`
-            : nameFilter || roleFilter;
+          roleFilter && nameFilter ? `${nameFilter} && ${roleFilter}` : nameFilter || roleFilter
 
         const result = await pb.collection("users").getList(page, perPage, {
           expand: "roles",
           sort: sortOrder === "asc" ? "name" : "-name",
           requestKey: null,
-          filter: combinedFilter,
-        });
+          filter: combinedFilter
+        })
 
         const mapped: User[] = result.items.map((u) => ({
           id: u.id,
           email: u.email,
           name: u.name,
-          roles: u.expand?.roles || [],
-        }));
+          roles: u.expand?.roles || []
+        }))
 
-        setUsers(mapped);
-        setTotalPages(result.totalPages);
-        setHasAccess(true);
+        setUsers(mapped)
+        setTotalPages(result.totalPages)
+        setHasAccess(true)
       } catch (err) {
-        console.error(t("userList.errorText"), err);
-        setHasAccess(false);
+        console.error(t("userList.errorText"), err)
+        setHasAccess(false)
       }
     },
     [searchTerm, selectedRoles, sortOrder, t]
-  );
+  )
 
   useEffect(() => {
     const permissions: string[] =
       pb.authStore.model?.expand?.roles?.flatMap((role: PocketbaseRole) =>
         role.expand?.permissions?.map((p: Permission) => p.permission)
-      ) || [];
+      ) || []
 
     if (permissions.includes("list_read")) {
-      getUsers(currentPage, perPage);
+      getUsers(currentPage, perPage)
     } else {
-      setHasAccess(false);
+      setHasAccess(false)
     }
-  }, [currentPage, perPage, getUsers]);
-  const userId = pb.authStore.model?.id;
+  }, [currentPage, perPage, getUsers])
+  const userId = pb.authStore.model?.id
 
   if (hasAccess === null) {
-    return (
-      <div className="text-center mt-20 text-gray-500">
-        {t("userList.loading")}
-      </div>
-    );
+    return <div className="text-center mt-20 text-gray-500">{t("userList.loading")}</div>
   }
 
   if (!hasAccess) {
     return (
       <div className="min-h-screen bg-gray-100 flex justify-center text-black items-center p-8">
         <div className="bg-white p-6 rounded shadow-md w-full max-w-md text-center space-y-4">
-          <h2 className="text-2xl font-semibold text-red-600">
-            {t("userList.profileHeader")}
-          </h2>
+          <h2 className="text-2xl font-semibold text-red-600">{t("userList.profileHeader")}</h2>
           <p>{t("userList.profileText")}</p>
           {userId && (
             <button
@@ -116,7 +108,7 @@ export default function UsersPage() {
           )}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -129,8 +121,8 @@ export default function UsersPage() {
           placeholder={t("userList.searchBar")}
           value={searchTerm}
           onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
+            setSearchTerm(e.target.value)
+            setCurrentPage(1)
           }}
           className="mb-6 p-2 rounded border border-gray-300 rounded-md w-full max-w-3xl"
         />
@@ -141,12 +133,10 @@ export default function UsersPage() {
                 type="checkbox"
                 checked={selectedRoles.includes(role)}
                 onChange={() => {
-                  setCurrentPage(1);
+                  setCurrentPage(1)
                   setSelectedRoles((prev) =>
-                    prev.includes(role)
-                      ? prev.filter((r) => r !== role)
-                      : [...prev, role]
-                  );
+                    prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
+                  )
                 }}
               />
               {t(`userList.roles.${role}`)}
@@ -159,9 +149,7 @@ export default function UsersPage() {
             <tr className="text-left text-gray-600 border-b bg-gray-100 border-gray-300">
               <th
                 className="py-2 cursor-pointer select-none"
-                onClick={() =>
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                }
+                onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
               >
                 Name {sortOrder === "asc" ? "↑" : "↓"}
               </th>
@@ -176,8 +164,8 @@ export default function UsersPage() {
                 <td className="py-2">
                   {user.roles
                     .map((r: string | { role: string }) => {
-                      const roleKey = typeof r === "string" ? r : r.role;
-                      return t(`userList.roles.${roleKey}`);
+                      const roleKey = typeof r === "string" ? r : r.role
+                      return t(`userList.roles.${roleKey}`)
                     })
                     .join(" & ")}
                 </td>
@@ -202,8 +190,8 @@ export default function UsersPage() {
                 <PaginationPrevious
                   href="#"
                   onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+                    e.preventDefault()
+                    if (currentPage > 1) setCurrentPage((prev) => prev - 1)
                   }}
                 />
               </PaginationItem>
@@ -212,8 +200,8 @@ export default function UsersPage() {
                   <PaginationLink
                     href="#"
                     onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(i + 1);
+                      e.preventDefault()
+                      setCurrentPage(i + 1)
                     }}
                     isActive={i + 1 === currentPage}
                   >
@@ -225,9 +213,8 @@ export default function UsersPage() {
                 <PaginationNext
                   href="#"
                   onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage < totalPages)
-                      setCurrentPage((prev) => prev + 1);
+                    e.preventDefault()
+                    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1)
                   }}
                 />
               </PaginationItem>
@@ -244,8 +231,8 @@ export default function UsersPage() {
               min={1}
               value={perPage}
               onChange={(e) => {
-                setPerPage(Number(e.target.value));
-                setCurrentPage(1);
+                setPerPage(Number(e.target.value))
+                setCurrentPage(1)
               }}
               className="w-16 border px-2 py-1 rounded text-sm"
             />
@@ -262,5 +249,5 @@ export default function UsersPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

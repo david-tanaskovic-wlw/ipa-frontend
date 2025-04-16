@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { useTranslation } from "react-i18next";
-import "@/i18n"; 
-import React from "react";
+import { useTranslation } from "react-i18next"
+import "@/i18n"
+import React from "react"
 
 const languages = {
   en: { nativeName: "English" },
-  de: { nativeName: "Deutsch" },
-};
+  de: { nativeName: "Deutsch" }
+}
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation()
 
   return (
     <div className="absolute top-20 right-4">
@@ -26,5 +26,5 @@ export default function LanguageSwitcher() {
         ))}
       </select>
     </div>
-  );
+  )
 }

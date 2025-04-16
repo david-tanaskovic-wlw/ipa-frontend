@@ -1,61 +1,61 @@
-"use client";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import pb from "@/app/hooks/usePocketBase";
-import type { Permission, PocketbaseRole, RegisterForm, Role } from "@/app/lib/types";
-import { useTranslation } from "react-i18next";
-import "@/i18n";
+"use client"
+import { toast } from "sonner"
+import { useState, useEffect } from "react"
+import pb from "@/app/hooks/usePocketBase"
+import type { Permission, PocketbaseRole, RegisterForm, Role } from "@/app/lib/types"
+import { useTranslation } from "react-i18next"
+import "@/i18n"
 
 export default function RegisterPage() {
-  const [t] = useTranslation();
+  const [t] = useTranslation()
   const [formData, setFormData] = useState<RegisterForm>({
     name: "",
     email: "",
     password: "",
-    roles: [],
-  });
+    roles: []
+  })
 
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
 
   useEffect(() => {
     const permissions =
       pb.authStore.model?.expand?.roles?.flatMap((r: PocketbaseRole) =>
         r.expand?.permissions?.map((p: Permission) => p.permission)
-      ) || [];
+      ) || []
 
-    setHasPermission(permissions.includes("user_create"));
-  }, []);
+    setHasPermission(permissions.includes("user_create"))
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+      [e.target.name]: e.target.value
+    }))
+  }
 
   const handleRoleChange = (role: Role) => {
     setFormData((prev) => {
       const roles = prev.roles.includes(role)
         ? prev.roles.filter((r) => r !== role)
-        : [...prev.roles, role];
+        : [...prev.roles, role]
 
-      return { ...prev, roles };
-    });
-  };
+      return { ...prev, roles }
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (formData.roles.length === 0) {
-      toast.error(t("register.noRole"));
-      return;
+      toast.error(t("register.noRole"))
+      return
     }
 
     try {
       const roleRecords = await pb.collection("roles").getFullList({
-        filter: formData.roles.map((role) => `role = "${role}"`).join(" || "),
-      });
-      const roleIds = roleRecords.map((r) => r.id);
+        filter: formData.roles.map((role) => `role = "${role}"`).join(" || ")
+      })
+      const roleIds = roleRecords.map((r) => r.id)
 
       await pb.collection("users").create({
         email: formData.email,
@@ -63,36 +63,29 @@ export default function RegisterPage() {
         passwordConfirm: formData.password,
         emailVisibility: true,
         name: formData.name,
-        roles: roleIds,
-      });
+        roles: roleIds
+      })
 
-      toast.success(t("register.successMessage"));
+      toast.success(t("register.successMessage"))
     } catch {
-      toast.error(t("register.errorMessage"));
+      toast.error(t("register.errorMessage"))
     }
-  };
+  }
 
   if (hasPermission === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 text-red-600 px-4">
         <div className="text-center bg-white p-8 shadow-md rounded-md max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-4">
-            {t("register.noPermsHeader")}
-          </h1>
+          <h1 className="text-2xl font-bold mb-4">{t("register.noPermsHeader")}</h1>
           <p className="text-gray-700">{t("register.noPermsText")} </p>
         </div>
       </div>
-    );
+    )
   }
   return (
     <div className="bg-gray-50 text-gray-900 min-h-screen flex items-center justify-center px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          {t("register.registerText")}
-        </h1>
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
+        <h1 className="text-2xl font-bold mb-6 text-center">{t("register.registerText")}</h1>
         <title>{t("register.registerText")}</title>
 
         <label className="block mb-2 text-sm font-medium">Name</label>
@@ -116,9 +109,7 @@ export default function RegisterPage() {
           required
         />
 
-        <label className="block mb-2 text-sm font-medium">
-          {t("register.passwordText")}
-        </label>
+        <label className="block mb-2 text-sm font-medium">{t("register.passwordText")}</label>
         <input
           name="password"
           type="password"
@@ -160,5 +151,5 @@ export default function RegisterPage() {
         </button>
       </form>
     </div>
-  );
+  )
 }
