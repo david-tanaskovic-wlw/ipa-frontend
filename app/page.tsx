@@ -29,13 +29,16 @@ export default function UsersPage() {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  if (!pb.authStore.isValid) {
-    router.push("/pages/login");
-    return null;
-  }
-
+  useEffect(() => {
+    if (!pb.authStore.isValid) {
+      router.replace("/pages/login");
+    }
+  }, [router]);
   const getUsers = useCallback(
     async (page: number, perPage: number) => {
+      if (!pb.authStore.isValid) {
+        return;
+      }
       try {
         const roleFilter =
           selectedRoles.length > 0
@@ -84,8 +87,7 @@ export default function UsersPage() {
     } else {
       setHasAccess(false);
     }
-  }, [getUsers, currentPage, perPage]);
-
+  }, [currentPage, perPage, getUsers]);
   const userId = pb.authStore.model?.id;
 
   if (hasAccess === null) {
@@ -173,9 +175,13 @@ export default function UsersPage() {
                 <td className="py-2">{user.name}</td>
                 <td className="py-2">
                   {user.roles
-                    .map((r: any) => t(`userList.roles.${r.role}`))
+                    .map((r: string | { role: string }) => {
+                      const roleKey = typeof r === "string" ? r : r.role;
+                      return t(`userList.roles.${roleKey}`);
+                    })
                     .join(" & ")}
                 </td>
+
                 <td className="py-2 text-right pr-4 text-gray-500">
                   <Link
                     href={`/pages/userProfile/${user.id}`}

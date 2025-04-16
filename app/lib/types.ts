@@ -12,24 +12,23 @@ export type RegisterForm = {
   roles: Role[];
 };
 
-
 export type User = {
   id: string;
-  email: string
+  email: string;
   name: string;
   roles: Role[];
 };
 
 export type Permission = {
-  permission: string
-}
+  permission: string;
+};
 
 export type PocketbaseRole = {
-  role: string
+  role: string;
   expand?: {
-    permissions?: Permission[]
-  }
-}
+    permissions?: Permission[];
+  };
+};
 
 export type PocketbaseUser = {
   id: string;
@@ -38,4 +37,4 @@ export type PocketbaseUser = {
   expand?: {
     roles: PocketbaseRole[];
   };
-}
+};
