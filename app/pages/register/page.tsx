@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
       toast.success(t("register.successMessage"));
     } catch {
-      toast.error("register.errorMessage");
+      toast.error(t("register.errorMessage"));
     }
   };
 
