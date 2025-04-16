@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import pb from "@/app/hooks/usePocketBase";
-import type { RegisterForm, Role } from "@/app/lib/types";
+import type { Permission, PocketbaseRole, RegisterForm, Role } from "@/app/lib/types";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 
@@ -19,8 +19,8 @@ export default function RegisterPage() {
 
   useEffect(() => {
     const permissions =
-      pb.authStore.model?.expand?.roles?.flatMap((r: any) =>
-        r.expand?.permissions?.map((p: any) => p.permission)
+      pb.authStore.model?.expand?.roles?.flatMap((r: PocketbaseRole) =>
+        r.expand?.permissions?.map((p: Permission) => p.permission)
       ) || [];
 
     setHasPermission(permissions.includes("user_create"));

@@ -7,8 +7,10 @@ import pb from "@/app/hooks/usePocketBase";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner"; 
+import type { Permission, PocketbaseRole } from "@/app/lib/types";
 
 export default function NavBar() {
+    
   const { t } = useTranslation();
   const [permissions, setPermissions] = useState<string[] | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -22,8 +24,8 @@ export default function NavBar() {
     setUserId(currentUser?.id ?? null);
 
     const perms =
-      currentUser?.expand?.roles?.flatMap((r: any) =>
-        r.expand?.permissions?.map((p: any) => p.permission)
+      currentUser?.expand?.roles?.flatMap((r: PocketbaseRole) =>
+        r.expand?.permissions?.map((p: Permission) => p.permission)
       ) || [];
 
     setPermissions(perms);

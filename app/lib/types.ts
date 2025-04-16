@@ -19,3 +19,23 @@ export type User = {
   name: string;
   roles: Role[];
 };
+
+export type Permission = {
+  permission: string
+}
+
+export type PocketbaseRole = {
+  role: string
+  expand?: {
+    permissions?: Permission[]
+  }
+}
+
+export type PocketbaseUser = {
+  id: string;
+  email: string;
+  name: string;
+  expand?: {
+    roles: PocketbaseRole[];
+  };
+}

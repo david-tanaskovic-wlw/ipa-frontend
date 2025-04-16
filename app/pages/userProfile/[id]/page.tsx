@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
-import type { Role } from "@/app/lib/types";
+import type { Permission, PocketbaseRole, Role } from "@/app/lib/types";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 import { toast } from "sonner";
@@ -30,8 +30,8 @@ export default function UserProfilePage() {
       });
 
       const currentUserPermissions =
-        pb.authStore.model?.expand?.roles?.flatMap((r: any) =>
-          r.expand?.permissions?.map((p: any) => p.permission)
+        pb.authStore.model?.expand?.roles?.flatMap((r: PocketbaseRole) =>
+          r.expand?.permissions?.map((p: Permission) => p.permission)
         ) || [];
 
       setIsEditable(currentUserPermissions.includes("user_edit"));
@@ -39,7 +39,7 @@ export default function UserProfilePage() {
       setFormData({
         name: record.name,
         email: record.email,
-        roles: record.expand?.roles.map((r: any) => r.role) || [],
+        roles: record.expand?.roles.map((r: PocketbaseRole) => r.role) || [],
       });
     };
 

@@ -1,9 +1,10 @@
 "use client";
 
+import { useCallback } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import pb from "@/app/hooks/usePocketBase";
-import type { User } from "@/app/lib/types";
+import type { Permission, PocketbaseRole, User } from "@/app/lib/types";
 import Link from "next/link";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
@@ -33,46 +34,49 @@ export default function UsersPage() {
     return null;
   }
 
-  const getUsers = async (page: number, perPage: number) => {
-    try {
-      const roleFilter =
-        selectedRoles.length > 0
-          ? `(${selectedRoles.map((r) => `roles.role="${r}"`).join(" || ")})`
-          : "";
+  const getUsers = useCallback(
+    async (page: number, perPage: number) => {
+      try {
+        const roleFilter =
+          selectedRoles.length > 0
+            ? `(${selectedRoles.map((r) => `roles.role="${r}"`).join(" || ")})`
+            : "";
 
-      const nameFilter = `name~"${searchTerm}"`;
-      const combinedFilter =
-        roleFilter && nameFilter
-          ? `${nameFilter} && ${roleFilter}`
-          : nameFilter || roleFilter;
+        const nameFilter = `name~"${searchTerm}"`;
+        const combinedFilter =
+          roleFilter && nameFilter
+            ? `${nameFilter} && ${roleFilter}`
+            : nameFilter || roleFilter;
 
-      const result = await pb.collection("users").getList(page, perPage, {
-        expand: "roles",
-        sort: sortOrder === "asc" ? "name" : "-name",
-        requestKey: null,
-        filter: combinedFilter,
-      });
+        const result = await pb.collection("users").getList(page, perPage, {
+          expand: "roles",
+          sort: sortOrder === "asc" ? "name" : "-name",
+          requestKey: null,
+          filter: combinedFilter,
+        });
 
-      const mapped: User[] = result.items.map((u: any) => ({
-        id: u.id,
-        email: u.email,
-        name: u.name,
-        roles: u.expand?.roles || [],
-      }));
+        const mapped: User[] = result.items.map((u) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          roles: u.expand?.roles || [],
+        }));
 
-      setUsers(mapped);
-      setTotalPages(result.totalPages);
-      setHasAccess(true);
-    } catch (err) {
-      console.error(t("userList.errorText"), err);
-      setHasAccess(false);
-    }
-  };
+        setUsers(mapped);
+        setTotalPages(result.totalPages);
+        setHasAccess(true);
+      } catch (err) {
+        console.error(t("userList.errorText"), err);
+        setHasAccess(false);
+      }
+    },
+    [searchTerm, selectedRoles, sortOrder, t]
+  );
 
   useEffect(() => {
     const permissions: string[] =
-      pb.authStore.model?.expand?.roles?.flatMap((role: any) =>
-        role.expand?.permissions?.map((p: any) => p.permission)
+      pb.authStore.model?.expand?.roles?.flatMap((role: PocketbaseRole) =>
+        role.expand?.permissions?.map((p: Permission) => p.permission)
       ) || [];
 
     if (permissions.includes("list_read")) {
@@ -80,7 +84,7 @@ export default function UsersPage() {
     } else {
       setHasAccess(false);
     }
-  }, [currentPage, perPage, searchTerm, selectedRoles, sortOrder]);
+  }, [getUsers, currentPage, perPage]);
 
   const userId = pb.authStore.model?.id;
 
