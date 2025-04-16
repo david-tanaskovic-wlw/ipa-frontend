@@ -28,6 +28,11 @@ export default function UsersPage() {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  if (!pb.authStore.isValid) {
+    router.push("/pages/login");
+    return null;
+  }
+
   const getUsers = async (page: number, perPage: number) => {
     try {
       const roleFilter =
