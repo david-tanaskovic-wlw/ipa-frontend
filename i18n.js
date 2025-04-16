@@ -59,6 +59,7 @@ i18n
             donor: "Donor",
             successMessage: "User created successfully.",
             errorMessage: "Error creating user.",
+            noRole: "Please select at least one role.",
           },
           userList: {
             loading: "Loading...",
@@ -141,6 +142,8 @@ i18n
             donor: "Spender",
             successMessage: "Benutzer erfolgreich erstellt.",
             errorMessage: "Fehler beim Erstellen des Benutzers.",
+            noRole: "Bitte wähle mindestens eine Rolle aus."
+
           },
           userList: {
             loading: "Lade...",

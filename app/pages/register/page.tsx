@@ -46,6 +46,11 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (formData.roles.length === 0) {
+      toast.error(t("register.noRole"));
+      return;
+    }
+
     try {
       const roleRecords = await pb.collection("roles").getFullList({
         filter: formData.roles.map((role) => `role = "${role}"`).join(" || "),
