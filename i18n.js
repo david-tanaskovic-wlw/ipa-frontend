@@ -48,7 +48,6 @@ i18n
             forgotText: "Enter your email to reset password:",
             invalidEmail: "Please enter a valid email",
             resetButton: "Send Reset Link",
-            emailNotFound: "Email not found",
             emailSent:
               "Password reset email sent! Please check your inbox. (Note: Check your spam folder if you don't see it"
           },
@@ -128,7 +127,6 @@ i18n
             forgotText: "Gib deine E-Mail-Adresse ein, um dein Passwort zurückzusetzen:",
             invalidEmail: "Bitte gültige E-Mail eingeben",
             resetButton: "Link zum Zurücksetzen senden",
-            emailNotFound: "E-Mail nicht gefunden",
             emailSent:
               "E-Mail zum Zurücksetzen des Passworts gesendet! Bitte überprüfe deinen Posteingang. (Hinweis: Überprüfe deinen Spam-Ordner, wenn du sie nicht siehst)"
           },

@@ -68,21 +68,11 @@ export default function LoginPage() {
       toast.error(t("resetPassword.invalidEmail"))
       return
     }
-
     try {
-      const result = await pb.collection("users").getFullList({
-        filter: `email="${resetEmail}"`
-      })
-
-      if (result.length === 0) {
-        toast.error(t("resetPassword.emailNotFound"))
-        return
-      }
-
       await pb.collection("users").requestPasswordReset(resetEmail)
       toast.success(t("resetPassword.emailSent"))
     } catch {
-      toast.error(t("resetPassword.emailError"))
+      toast.error(t("resetPassword.error"))
     }
   }
 
