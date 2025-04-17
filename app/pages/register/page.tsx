@@ -50,7 +50,10 @@ export default function RegisterPage() {
       toast.error(t("register.noRole"))
       return
     }
-
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast.error(t("register.invalidEmail"))
+      return
+    }
     try {
       const roleRecords = await pb.collection("roles").getFullList({
         filter: formData.roles.map((role) => `role = "${role}"`).join(" || ")
