@@ -38,3 +38,5 @@ export type PocketbaseUser = {
     roles: PocketbaseRole[]
   }
 }
+
+export type LanguageKey = "en" | "de";

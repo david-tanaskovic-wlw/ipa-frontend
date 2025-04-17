@@ -3,8 +3,8 @@
 import { useTranslation } from "react-i18next"
 import "@/i18n"
 import React from "react"
-
-const languages = {
+import type { LanguageKey } from "@/app/lib/types"
+const languages: Record<LanguageKey, { nativeName: string }> = {
   en: { nativeName: "English" },
   de: { nativeName: "Deutsch" }
 }
@@ -21,7 +21,7 @@ export default function LanguageSwitcher() {
       >
         {Object.keys(languages).map((lng) => (
           <option key={lng} value={lng}>
-            {languages[lng].nativeName}
+            {languages[lng as LanguageKey].nativeName}
           </option>
         ))}
       </select>
